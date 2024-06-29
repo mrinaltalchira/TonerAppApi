@@ -5,18 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
+use PharIo\Manifest\Email;
+use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
 
-        $request->validate([
-            'phone' => 'nullable|max:15',
-            'email' => 'nullable|email',
+        $validator = Validator::make($request->all(), [
+            'phone' => 'nullable|string|max:15',
+            'email' => 'nullable|string|email',
         ], [
-            'email.email' => 'The email must be a valid email address.',
+            'email.email' => 'The email must be a valid email address.', // Custom error message for email validation
         ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,   
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(), // Get validation errors as array
+            ], 422); // 422 Unprocessable Entity status code indicates validation errors
+        }
 
         // Additional logic to ensure at least one of them is provided
         if (empty($request->input('phone')) && empty($request->input('email'))) {
@@ -26,22 +36,28 @@ class AuthController extends Controller
                 'status' => 200,
             ], 200);
         } else {
-            $email = $request->input('email');
+            $email = $request->input('email'); 
             $phone = $request->input('phone');
             $password  = $request->input('password');
             if (empty($phone) && !empty($email)) {
                 $user = User::where('email', $email)->first();
                 if ($user) {
-                    if (!empty($password) && Hash::check($password, $user->password)) {
-                        return response()->json([
-                            'error' => false,
-                            'message' => 'Password Matched',
-                            'status' => 200,
-                            'user'
-                        ], 200);
+
+                    if (!empty($password) && Hash::check($password, $user->password)){
+
+                         return response()->json([
+                        'error' => false,
+                        'message' => 'Success',
+                        'status' => 200,
+                        'data' => [
+                            'message' => 'User details stored successfully',
+                            'user' => $user,
+                        ],
+                    ]);
                         // Password matches
-                        // Here you can proceed with authenticated actions
                     } else {
+
+                      
                         return response()->json([
                             'error' => false,
                             'message' => 'Wrong password',
@@ -52,7 +68,7 @@ class AuthController extends Controller
                     // nhi hai user
                     return response()->json([
                         'error' => false,
-                        'message' => 'user not found',
+                        'message' => 'user not found!',
                         'status' => 200,
                     ], 200);
                 }
@@ -60,12 +76,16 @@ class AuthController extends Controller
                 $user = User::where('phone', $phone)->first();
                 if ($user) {
                     if (!empty($password) && Hash::check($password, $user->password)) {
+
                         return response()->json([
                             'error' => false,
-                            'message' => 'Password Matched',
+                            'message' => 'Success',
                             'status' => 200,
-                            'user'
-                        ], 200);
+                            'data' => [
+                                'message' => 'User details stored successfully',
+                                'user' => $user,
+                            ],
+                        ]);
                         // Password matches
                         // Here you can proceed with authenticated actions
                     } else {
