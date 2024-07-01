@@ -15,10 +15,20 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
+
+// Route:: ('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/create-user', [AuthController::class, 'create_user']);
 
+// Route::middleware(['auth.bearer'])->group(function () {
+//     Route::get('/get-user', [AuthController::class, 'getUser']);
+// });  
+    Route::middleware('auth.sanctum')->group(function () {
+        Route::get('/get-user', [AuthController::class, 'getUser']);
+        
+    });
