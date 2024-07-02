@@ -2,7 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;    
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,10 +26,14 @@ use App\Http\Controllers\AuthController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/create-user', [AuthController::class, 'create_user']);
 
-// Route::middleware(['auth.bearer'])->group(function () {
-//     Route::get('/get-user', [AuthController::class, 'getUser']);
-// });  
+
     Route::middleware('auth.sanctum')->group(function () {
+
         Route::get('/get-user', [AuthController::class, 'getUser']);
-        
+
+        // CLIENT
+        Route::post('/add-client', [ClientController::class, 'addClient']);
+        Route::get('/all-client', [ClientController::class, 'allClient']);
+
+
     });

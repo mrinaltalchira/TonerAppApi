@@ -20,12 +20,13 @@ class AuthController extends Controller
             'email.email' => 'The email must be a valid email address.', // Custom error message for email validation
         ]);
 
+        
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,   
                 'message' => 'Validation failed',
-                'errors' => $validator->errors(), // Get validation errors as array
+                'error' => $validator->errors(), // Get validation errors as array
             ], 422); // 422 Unprocessable Entity status code indicates validation errors
         }
 
