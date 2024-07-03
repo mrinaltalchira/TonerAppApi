@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\MachineController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,16 +26,20 @@ use App\Http\Controllers\ClientController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/create-user', [AuthController::class, 'create_user']);
 
 
     Route::middleware('auth.sanctum')->group(function () {
 
-        Route::get('/get-user', [AuthController::class, 'getUser']);
+    
 
         // CLIENT
         Route::post('/add-client', [ClientController::class, 'addClient']);
         Route::get('/all-client', [ClientController::class, 'allClient']);
-
-
+        // MACHINE
+        Route::post('/add-machine', [MachineController::class, 'addMachine']);
+        Route::get('/all-machine', [MachineController::class, 'allMachine']);
+        // USER
+        Route::post('/add-user', [UserController::class, 'addUser']);
+        Route::get('/all-user', [UserController::class, 'allUser']);
+ 
     });

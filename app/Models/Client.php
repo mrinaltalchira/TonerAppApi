@@ -19,8 +19,9 @@ class Client extends Model
         'email',
         'phone',
         'address',
-        'contact_person' ,
-        'add_by'
+        'contact_person',
+        'add_by',
+        'isActive'
         // Add other fields here
     ];
 

@@ -122,15 +122,17 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'phone' => 'required|string|max:15|unique:users,phone',
-            'password' => 'required|string|min:8',
-            'authority' => 'required|string',
-            'is_active' => 'required|boolean',
+            'password' => 'required|string|min:8', 
+            'is_active' => 'required|string',
+            'machine_module' => 'required|string',
+            'client_module' => 'required|string',
+            'user_module' => 'required|string',
         ], [
             'email.email' => 'The email must be a valid email address.'
         ]);
 
         if  ($validator->fails()){
-            return response()->json([
+            return response()->json([   
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $validator->errors(), // Get validation errors as array
@@ -148,8 +150,10 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => $hashedPassword,
-            'authority' => $request->authority,
             'is_active' => $request->is_active,
+            'machine_module'=>$request->machine_module,
+            'client_module'=>$request->client_module,
+            'user_module'=>$request->user_module,
         ]); 
         $token = $user->createToken('auth_token')->plainTextToken;
         
@@ -157,9 +161,16 @@ class AuthController extends Controller
         $user->save();
 
      
-
-        // Return a response
-        return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
+        return response()->json([
+            'error' => false,
+            'message' => 'Success',
+            'status' => 200,
+            'data' => [
+                'message' => 'User created successfully',
+                'user' => $user,
+            ],
+        ]); 
+        
     }
 
 

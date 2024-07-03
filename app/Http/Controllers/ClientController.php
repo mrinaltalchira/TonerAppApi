@@ -80,26 +80,35 @@ class ClientController extends Controller
 
     public function allClient(Request $request){
         try {
-            $clients = Client::all(); 
+            $searchQuery = $request->query('search');
+    
+            if (!empty($searchQuery)) {
+                // Perform search query
+                $clients = Client::where('name', 'like', "%$searchQuery%")
+                                 ->orderBy('created_at', 'desc')
+                                 ->get();
+            } else {
+                // Fetch all clients if no search query provided
+                $clients = Client::orderBy('created_at', 'desc')->get();
+            }
             
             return response()->json([
                 'error' => false,
                 'message' => 'Success',
                 'status' => 200,
                 'data' => [
-                    'message' => 'Clients fatched successfully',
+                    'message' => 'Clients fetched successfully',
                     'clients' => $clients
                 ],
             ]);
-             
-            return response()->json($clients, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => true,
                 'message' => 'Error',
                 'status' => 500,
-                
             ]);
         }
     }
+
+    
 }

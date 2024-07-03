@@ -16,13 +16,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->unique();
-            $table->boolean('is_active')->default(true);
+            $table->string('is_active')->default(false);
             $table->string('user_role');
             $table->string('password');
-            $table->string('authority')->nullable();
+            $table->string('machine_module')->default(true);
+            $table->string('client_module')->default(true);
+            $table->string('user_module')->default(true);
             $table->timestamps(); // Adds created_at and updated_at columns
         });
-    }
+    } 
 
     /**
      * Reverse the migrations.
