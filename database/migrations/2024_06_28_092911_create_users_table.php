@@ -16,12 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->unique();
-            $table->string('is_active')->default(false);
+            $table->string('is_active')->default('1');
             $table->string('user_role');
             $table->string('password');
-            $table->string('machine_module')->default(true);
-            $table->string('client_module')->default(true);
-            $table->string('user_module')->default(true);
+            $table->string('machine_module')->default('1');
+            $table->string('client_module')->default('1');
+            $table->string('user_module')->default('1');
             $table->timestamps(); // Adds created_at and updated_at columns
         });
     } 

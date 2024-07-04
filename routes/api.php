@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MachineController;
+use App\Http\Controllers\SupplyChainController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -41,5 +42,10 @@ Route::post('/login', [AuthController::class, 'login']);
         // USER
         Route::post('/add-user', [UserController::class, 'addUser']);
         Route::get('/all-user', [UserController::class, 'allUser']);
+        // 
+        Route::post('/add-supply', [SupplyChainController::class, 'addsupply']);
+        Route::get('/get-spinner-details', [SupplyChainController::class, 'getSpinnerDetails']);
+
+        
  
     });

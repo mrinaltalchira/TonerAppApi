@@ -26,8 +26,12 @@ class User extends Authenticatable
         'is_active',
         'user_role',
         'password',
-        'authority',
-    ];
+        'machine_module',
+        'client_module',
+        'user_module',
+    ]; 
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

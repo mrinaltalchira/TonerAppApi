@@ -113,78 +113,7 @@ class AuthController extends Controller
         }
     }
 
-    
-    public function create_user(Request $request)
-    {
-        // Validate the request data
-        $validator = Validator::make($request->all(), [
-            'user_role' => 'required|string',
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'phone' => 'required|string|max:15|unique:users,phone',
-            'password' => 'required|string|min:8', 
-            'is_active' => 'required|string',
-            'machine_module' => 'required|string',
-            'client_module' => 'required|string',
-            'user_module' => 'required|string',
-        ], [
-            'email.email' => 'The email must be a valid email address.'
-        ]);
-
-        if  ($validator->fails()){
-            return response()->json([   
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(), // Get validation errors as array
-            ], 422); // 422 Unprocessable Entity status code indicates validation errors
-        }
-
-        // Hash the password
-        $hashedPassword = Hash::make($request->password);
-  
-    
-        // Create the user
-        $user = User::create([
-            'user_role' => $request->user_role,
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => $hashedPassword,
-            'is_active' => $request->is_active,
-            'machine_module'=>$request->machine_module,
-            'client_module'=>$request->client_module,
-            'user_module'=>$request->user_module,
-        ]); 
-        $token = $user->createToken('auth_token')->plainTextToken;
-        
-        $user->token = $token;
-        $user->save();
-
-     
-        return response()->json([
-            'error' => false,
-            'message' => 'Success',
-            'status' => 200,
-            'data' => [
-                'message' => 'User created successfully',
-                'user' => $user,
-            ],
-        ]); 
-        
-    }
 
 
-    public function getUser(Request $request)
-    { 
-        $user = $request->user; 
- 
-    
-
-        if (!$user) {
-            return response()->json(['error' => 'Ukjbfdskljfund'], 404);
-        }
-
-        return response()->json(['user' => $user], 200);
-    }
 
 }

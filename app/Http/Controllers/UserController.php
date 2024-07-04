@@ -14,7 +14,7 @@ class UserController extends Controller
         try {
             $searchQuery = $request->query('search');
     
-            if (!empty($searchQuery)) {
+            if (!empty($searchQuery)){
                 // Perform search query
                 $user = User::where(function($query) use ($searchQuery) {
                     $query->where('name', 'like', "%$searchQuery%")
