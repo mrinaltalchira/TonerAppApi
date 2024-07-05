@@ -13,6 +13,42 @@ use Illuminate\Support\Facades\Hash;
 
 class SupplyChainController extends Controller
 {
+
+
+    public function allSupply(Request $request){
+        try {
+            $searchQuery = $request->query('search');
+    
+            if (!empty($searchQuery)){
+                // Perform search query
+                $supply = SupplyChian::where(function($query) use ($searchQuery) {
+                    $query->where('qr_code', 'like', "%$searchQuery%")
+                          ->orWhere('client_name', 'like', "%$searchQuery%");
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+            } else {
+                // Fetch all clients if no search query provided
+                $supply = SupplyChian::orderBy('created_at', 'desc')->get();
+            }
+            
+            return response()->json([
+                'error' => false,
+                'message' => 'Success',
+                'status' => 200,
+                'data' => [
+                    'message' => 'Supply fetched successfully',
+                    'supply' => $supply
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Error',
+                'status' => 500,
+            ]);
+        }
+    }
  
     public function addsupply(Request $request)
     {
@@ -33,35 +69,81 @@ class SupplyChainController extends Controller
                 'errors' => $validator->errors(), // Get validation errors as array
             ], 422); // 422 Unprocessable Entity status code indicates validation errors
         }
-  
-        $data=explode(",",$request->qr_code);
-
-        foreach($data as $singledata){
-            $supply = SupplyChian::create([
-                'dispatch_receive' => $request->dispatch_receive,
-                'client_name' => $request->client_name,
-                'client_city' => $request->client_city,
-                'model_no' => $request->model_no,
-                'date_time' => $request->date_time,
-                'qr_code' => $singledata,
-                'reference' => $request->reference,
-                'add_by' => $request->user->id
-            ]);
-           
+        
+        if ($request->dispatch_receive == '0') {
+            $data = explode(",", $request->qr_code);
+            foreach ($data as $singledata) {
+                $qr_exists = SupplyChian::where('qr_code', $singledata)->exists();
+                if ($qr_exists) {
+                    return response()->json([
+                        'error' => false,
+                        'message' => 'Success',
+                        'status' => 200,
+                        'data' => [
+                            'message' => 'QR code already exist.'
+                        ],
+                    ]); 
+                } else {
+                    $supply = SupplyChian::create([
+                        'dispatch_receive' => $request->dispatch_receive,
+                        'client_name' => $request->client_name,
+                        'client_city' => $request->client_city,
+                        'model_no' => $request->model_no,
+                        'date_time' => $request->date_time,
+                        'qr_code' => $singledata,
+                        'reference' => $request->reference,
+                        'add_by' => $request->user->id
+                    ]);
+                    return response()->json([
+                        'error' => false,
+                        'message' => 'Success',
+                        'status' => 200,
+                        'data' => [
+                            'message' => 'Supply created successfully.',
+                            'supply' => $supply,
+                        ],
+                    ]);
+                }
+            }
+        } else {
+            $data = explode(",", $request->qr_code);
+            foreach ($data as $singledata) {
+                $supply = SupplyChian::where('qr_code', $singledata)->first();
+                
+                if (!$supply) {
+                    return response()->json([
+                        'error' => false,
+                        'message' => 'Success', 
+                        'status' => 200,
+                        'data' => [
+                            'message' => 'QR code does not exist.', 
+                        ],
+                    ]); 
+                }
+        
+                if ($supply->dispatch_receive == "1") {
+                    return response()->json('QR code already received.');
+                } else {
+                    $supply->dispatch_receive = '1';
+                    $supply->save();
+                    return response()->json([
+                        'error' => false,
+                        'message' => 'Success', 
+                        'status' => 200,
+                        'data' => [
+                            'message' => 'Supply updated successfully',
+                            'supply' => $supply,
+                        ],
+                    ]);
+                }
+            }
         }
+        
       
-        $supply->save();
 
-
-        return response()->json([
-            'error' => false,
-            'message' => 'Success',
-            'status' => 200,
-            'data' => [
-                'message' => 'Supply created successfully',
-                'user' => $supply,
-            ],
-        ]); 
+       
+      
+  
     }
 
     public function getSpinnerDetails(Request $request){

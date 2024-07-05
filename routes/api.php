@@ -31,7 +31,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth.sanctum')->group(function () {
 
-    
+        Route::get('/get-profile', [AuthController::class, 'getProfile']);
 
         // CLIENT
         Route::post('/add-client', [ClientController::class, 'addClient']);
@@ -42,10 +42,10 @@ Route::post('/login', [AuthController::class, 'login']);
         // USER
         Route::post('/add-user', [UserController::class, 'addUser']);
         Route::get('/all-user', [UserController::class, 'allUser']);
-        // 
+        // SUPPLY_CHAIN
         Route::post('/add-supply', [SupplyChainController::class, 'addsupply']);
         Route::get('/get-spinner-details', [SupplyChainController::class, 'getSpinnerDetails']);
+        Route::get('/all-supply', [SupplyChainController::class, 'allSupply']);
 
-        
- 
+    
     });

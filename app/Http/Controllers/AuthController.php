@@ -113,7 +113,25 @@ class AuthController extends Controller
         }
     }
 
+    public function getProfile(Request $request)
+    {
+        $user = User::find($request->user_id);
 
+        if (!$user) {
+            return response()->json([
+                'error' => true,
+                'message' => 'User not found',
+                'status' => 404
+            ], 404);
+        }
+
+        return response()->json([
+            'error' => false,
+            'message' => 'User fetched successfully',
+            'status' => 200,
+            'data' => $user
+        ], 200);
+    }
 
 
 }
