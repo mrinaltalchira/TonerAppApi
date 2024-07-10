@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MachineController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SupplyChainController;
 use App\Http\Controllers\UserController;
 
@@ -46,6 +47,11 @@ Route::post('/login', [AuthController::class, 'login']);
         Route::post('/add-supply', [SupplyChainController::class, 'addsupply']);
         Route::get('/get-spinner-details', [SupplyChainController::class, 'getSpinnerDetails']);
         Route::get('/all-supply', [SupplyChainController::class, 'allSupply']);
+        //  REPORTS
+        Route::get('/get-report', [ReportsController::class, 'clientReport']);
+        Route::post('/send-report', [ReportsController::class, 'sendReport']);
+        Route::get('/get-dashboard', [ReportsController::class, 'getDashboardDetails']);
+        
 
     
     });

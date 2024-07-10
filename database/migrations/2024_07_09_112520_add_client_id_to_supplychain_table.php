@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('supplychain', function (Blueprint $table) {
-            $table->string('client_city')->after('client_name');
-        });
+            $table->string('client_id')->after('dispatch_receive')->nullable();
+        }); 
     }
 
     /**
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('supplychain', function (Blueprint $table) {
-            $table->dropColumn('client_city');
+            $table->dropColumn('client_id');
         });
     }
 };

@@ -12,6 +12,7 @@ class ClientController extends Controller
 
     public function addClient(Request $request)
     { 
+ 
         $validator = Validator::make($request->all(), [
             'phone' => 'nullable|string|max:15',
             'email' => 'nullable|string|email',
@@ -56,6 +57,7 @@ class ClientController extends Controller
 
             $client = Client::create([
                 'name' => $request->name,
+                'isActive'=> $request->isActive,
                 'city' => $request->city,
                 'email' => $request->email,
                 'phone' => $request->phone,
@@ -110,5 +112,7 @@ class ClientController extends Controller
         }
     }
 
-    
+   
+
+
 }

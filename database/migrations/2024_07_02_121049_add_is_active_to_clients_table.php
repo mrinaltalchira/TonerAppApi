@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('clients', 'isActive')) {
             Schema::table('clients', function (Blueprint $table) {
-                $table->boolean('isActive')->default(false);
+                $table->string('isActive')->nullable();
             });
         }
     }

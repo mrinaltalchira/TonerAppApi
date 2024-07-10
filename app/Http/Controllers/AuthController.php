@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller 
 {
+    
     public function login(Request $request)
     {
 
@@ -128,7 +129,7 @@ class AuthController extends Controller
         return response()->json([
             'error' => false,
             'message' => 'User fetched successfully',
-            'status' => 200,
+            'status' => 200,    
             'data' => $user
         ], 200);
     }
