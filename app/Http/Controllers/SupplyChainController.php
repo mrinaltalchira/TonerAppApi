@@ -129,9 +129,11 @@ class SupplyChainController extends Controller
                     ]);
                 }
             }
+        
             foreach ($data as $singledata) {
+               
                 $supply = SupplyChain::where('qr_code', $singledata)->first();
-
+             
                 if (!$supply) {
                     return response()->json([
                         'error' => false,

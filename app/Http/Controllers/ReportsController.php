@@ -28,7 +28,7 @@ class ReportsController extends Controller
             ->whereBetween('created_at', [$request->from_date, $request->to_date])
             ->get();
 
-
+ 
         // Accessing the counts
         $report_count = $report[0]->report_count;
         $dispatch_count = $report[0]->dispatch_count;

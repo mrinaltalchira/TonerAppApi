@@ -29,6 +29,10 @@ use App\Http\Controllers\UserController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/all',function(){
+    dd('aha');
+});
+
 
     Route::middleware('auth.sanctum')->group(function () {
 
@@ -36,6 +40,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
         // CLIENT
         Route::post('/add-client', [ClientController::class, 'addClient']);
+        Route::post('/update-client', [ClientController::class, 'updateClient']);
         Route::get('/all-client', [ClientController::class, 'allClient']);
         // MACHINE
         Route::post('/add-machine', [MachineController::class, 'addMachine']);
