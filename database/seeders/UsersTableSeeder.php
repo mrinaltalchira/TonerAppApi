@@ -15,14 +15,16 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([
-            'user_id' => 1, // Auto-incremented, can be omitted as it's handled by the database
             'name' => 'Peter parker',
             'email' => 'peter@parker.com',
+            'token' => '',
             'phone' => '9214429001',
-            'is_active' => true,
+            'is_active' => '0',
             'user_role' => 'admin',
-            'password' => Hash::make('123456'), // Hashing the password
-            'authority' => 'full',
+            'password' => Hash::make('123456'), // Hashing the password 
+            'machine_module' => '1',
+            'client_module' => '1',
+            'user_module' => '1',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
