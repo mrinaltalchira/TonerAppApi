@@ -42,16 +42,22 @@ Route::get('/all',function(){
         Route::post('/add-client', [ClientController::class, 'addClient']);
         Route::post('/update-client', [ClientController::class, 'updateClient']);
         Route::get('/all-client', [ClientController::class, 'allClient']);
+
         // MACHINE
         Route::post('/add-machine', [MachineController::class, 'addMachine']);
         Route::get('/all-machine', [MachineController::class, 'allMachine']);
-        // USER
+        Route::post('/update-machine', [MachineController::class, 'updateMachine']);
+       
+        // USER 
         Route::post('/add-user', [UserController::class, 'addUser']);
+        Route::post('/update-user', [UserController::class, 'updateUser']);
         Route::get('/all-user', [UserController::class, 'allUser']);
+      
         // SUPPLY_CHAIN
         Route::post('/add-supply', [SupplyChainController::class, 'addsupply']);
         Route::get('/get-spinner-details', [SupplyChainController::class, 'getSpinnerDetails']);
         Route::get('/all-supply', [SupplyChainController::class, 'allSupply']);
+      
         //  REPORTS
         Route::get('/get-report', [ReportsController::class, 'clientReport']);
         Route::post('/send-report', [ReportsController::class, 'sendReport']);

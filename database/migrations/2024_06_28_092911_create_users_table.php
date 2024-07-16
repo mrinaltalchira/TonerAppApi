@@ -12,13 +12,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id('user_id'); // Auto-incrementing ID with custom name
-            $table->string('name');
+            $table->id();
+            $table->string('name')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->unique();
             $table->string('is_active')->default('1');
-            $table->string('user_role');
-            $table->string('password');
+            $table->string('user_role')->nullable();
+            $table->string('token')->nullable();
+            $table->string('password')->nullable();
             $table->string('machine_module')->default('1');
             $table->string('client_module')->default('1');
             $table->string('user_module')->default('1');

@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash; 
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
 
 
 class AuthController extends Controller 
 {
-    
     public function login(Request $request)
     {
 
@@ -30,6 +29,7 @@ class AuthController extends Controller
                 'error' => $validator->errors(), // Get validation errors as array
             ], 422); // 422 Unprocessable Entity status code indicates validation errors
         }
+       
 
         // Additional logic to ensure at least one of them is provided
         if (empty($request->input('phone')) && empty($request->input('email'))) {
@@ -43,25 +43,27 @@ class AuthController extends Controller
             $phone = $request->input('phone');
             $password  = $request->input('password');
             if (empty($phone) && !empty($email)) {
+              
                 $user = User::where('email', $email)->first();
                 if ($user) {
 
                     if (!empty($password) && Hash::check($password, $user->password)){
                         $token = $user->createToken('auth_token')->plainTextToken;
+                     
                         $user->forceFill([
                             'token' => $token, // Assuming 'api_token' is the column name for storing tokens
                         ])->save();
                          return response()->json([
                         'error' => false,
                         'message' => 'Success',
-                        'status' => 200,
+                        'status' => 200,    
                         'data' => [
                             'message' => 'User details stored successfully',
                             'user' => $user,
                             'token'=>$user->token
                         ],
                     ]);
-                        // Password matches
+                      
                     } else {
 
                       
@@ -84,15 +86,21 @@ class AuthController extends Controller
                 if ($user) {
                     if (!empty($password) && Hash::check($password, $user->password)) {
 
-                        return response()->json([
-                            'error' => false,
-                            'message' => 'Success',
-                            'status' => 200,
-                            'data' => [
-                                'message' => 'User details stored successfully',
-                                'user' => $user,
-                            ],
-                        ]);
+                        $token = $user->createToken('auth_token')->plainTextToken;
+                     
+                        $user->forceFill([
+                            'token' => $token, // Assuming 'api_token' is the column name for storing tokens
+                        ])->save();
+                         return response()->json([
+                        'error' => false,
+                        'message' => 'Success',
+                        'status' => 200,    
+                        'data' => [
+                            'message' => 'User details stored successfully',
+                            'user' => $user,
+                            'token'=>$user->token
+                        ],
+                    ]);
                         // Password matches
                         // Here you can proceed with authenticated actions
                     } else {
@@ -114,25 +122,7 @@ class AuthController extends Controller
         }
     }
 
-    public function getProfile(Request $request)
-    {
-        $user = User::find($request->user_id);
 
-        if (!$user) {
-            return response()->json([
-                'error' => true,
-                'message' => 'User not found',
-                'status' => 404
-            ], 404);
-        }
-
-        return response()->json([
-            'error' => false,
-            'message' => 'User fetched successfully',
-            'status' => 200,    
-            'data' => $user
-        ], 200);
-    }
 
 
 }

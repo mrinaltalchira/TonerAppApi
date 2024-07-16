@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
 
 class ClientController extends Controller
 {
 
     public function addClient(Request $request)
-    { 
- 
+    {
+
         $validator = Validator::make($request->all(), [
             'phone' => 'nullable|string|max:15',
             'email' => 'nullable|string|email',
@@ -57,7 +60,7 @@ class ClientController extends Controller
 
             $client = Client::create([
                 'name' => $request->name,
-                'isActive'=> $request->isActive,
+                'isActive' => $request->isActive,
                 'city' => $request->city,
                 'email' => $request->email,
                 'phone' => $request->phone,
@@ -80,89 +83,104 @@ class ClientController extends Controller
         }
     }
 
-    public function updateClient(Request $request)
+ 
+public function updateClient(Request $request)
 {
-    // Validate the incoming request
-    $validator = Validator::make($request->all(), [
-        'id' => 'required|integer|exists:clients,id',
-        'phone' => 'nullable|string|max:15',
-        'email' => 'nullable|string|email',
-    ], [
-        'email.email' => 'The email must be a valid email address.', // Custom error message for email validation
-    ]);
+    try {
+        // Retrieve the client to update
+        $client = Client::findOrFail($request->id);
 
-    if ($validator->fails()) {
+        // Validate input
+        $request->validate([
+            'email' => [
+                'sometimes',
+                'email',
+                Rule::unique('clients')->ignore($client->id),
+            ],
+            'phone' => [
+                'sometimes',
+                'numeric',
+                Rule::unique('clients')->ignore($client->id),
+            ],
+            // Add other validation rules as needed
+        ]);
+
+        // Update client data
+        $client->name = $request->input('name', $client->name);
+        $client->isActive = $request->input('isActive', $client->isActive);
+        $client->city = $request->input('city', $client->city);
+        $client->email = $request->input('email', $client->email);
+        $client->phone = $request->input('phone', $client->phone);
+        $client->address = $request->input('address', $client->address);
+        $client->contact_person = $request->input('contact_person', $client->contact_person);
+
+        // Save the updated client
+        $client->save();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Validation failed',
-            'error' => $validator->errors(), // Get validation errors as array
-        ], 422); // 422 Unprocessable Entity status code indicates validation errors
-    }
-
-    // Retrieve the client to update
-    $client = Client::findOrFail($request->id);
-
-    // Check if email or phone is being updated and if it already exists for another client
-    if ($request->has('email') && $client->email !== $request->email) {
-        $client_email_exists = Client::where('email', $request->email)->exists();
-        if ($client_email_exists) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Email already exists for another client!',
-                'status' => 400,
-            ]);
-        }
-    }
-
-    if ($request->has('phone') && $client->phone !== $request->phone) {
-        $client_phone_exists = Client::where('phone', $request->phone)->exists();
-        if ($client_phone_exists) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Phone no. already exists for another client!',
-                'status' => 400,
-            ]);
-        }
-    }
-
-    // Update client data
-    $client->name = $request->input('name', $client->name);
-    $client->isActive = $request->input('isActive', $client->isActive);
-    $client->city = $request->input('city', $client->city);
-    $client->email = $request->input('email', $client->email);
-    $client->phone = $request->input('phone', $client->phone);
-    $client->address = $request->input('address', $client->address);
-    $client->contact_person = $request->input('contact_person', $client->contact_person);
-
-    // Save the updated client
-    $client->save();
-
-    return response()->json([
-        'error' => false,
-        'message' => 'Success',
-        'status' => 200,
-        'data' => [
+            'error' => false,
             'message' => 'Client updated successfully',
-            'client' => $client
-        ],
-    ]);
+            'status' => 200,
+            'data' => [
+                'client' => $client
+            ],
+        ]);
+    } catch (ValidationException $e) {
+        // Handle validation exception
+        $errors = $e->validator->errors();
+    
+        // Initialize error messages
+        $errorMessage = '';
+    
+        // Check if specific errors exist for email and phone
+        if ($errors->has('email') && $errors->has('phone')) {
+            $errorMessage = 'Email and Phone are already taken.';
+        } elseif ($errors->has('email')) {
+            $errorMessage = $errors->first('email');
+        } elseif ($errors->has('phone')) {
+            $errorMessage = $errors->first('phone');
+        } else {
+            $errorMessage = 'Validation error'; // Fallback if no specific errors found
+        }
+    
+        return response()->json([
+            'error' => true,
+            'message' => $errorMessage,
+            'status' => 422,
+            'errors' => $errors,
+        ]);
+    } catch (QueryException $e) {
+        // Handle database query exception (e.g., unique constraint violation)
+        return response()->json([
+            'error' => true,
+            'message' => 'Database error: ' . $e->getMessage(),
+            'status' => 500,
+        ]);
+    } catch (\Exception $e) {
+        // Catch-all for any other unexpected exceptions
+        return response()->json([
+            'error' => true,
+            'message' => 'Error: ' . $e->getMessage(),
+            'status' => 500,
+        ]);
+    }
 }
 
-
-    public function allClient(Request $request){
+    public function allClient(Request $request)
+    {
         try {
             $searchQuery = $request->query('search');
-    
+
             if (!empty($searchQuery)) {
                 // Perform search query
                 $clients = Client::where('name', 'like', "%$searchQuery%")
-                                 ->orderBy('created_at', 'desc')
-                                 ->get();
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             } else {
                 // Fetch all clients if no search query provided
                 $clients = Client::orderBy('created_at', 'desc')->get();
             }
-            
+
             return response()->json([
                 'error' => false,
                 'message' => 'Success',
@@ -180,8 +198,4 @@ class ClientController extends Controller
             ]);
         }
     }
-
-   
-
-
 }
