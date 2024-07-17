@@ -39,7 +39,7 @@ Route::get('/all',function(){
         Route::get('/get-profile', [AuthController::class, 'getProfile']);
 
         // CLIENT
-        Route::post('/add-client', [ClientController::class, 'addClient']);
+        Route::post('/add-client', [ClientController::class, 'addClient']); 
         Route::post('/update-client', [ClientController::class, 'updateClient']);
         Route::get('/all-client', [ClientController::class, 'allClient']);
 
